@@ -1,28 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
+// 👉 IMPORTA MIDDLEWARES (vem da pasta middlewares)
 const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 
+// 👉 IMPORTA CONTROLLER
 const productController = require('../controllers/productController');
 
-// 🔓 ROTA PÚBLICA
+// 🔓 rota pública
 router.get('/', productController.list);
 
-// 🔒 ROTAS ADMIN
+// 🔒 rota protegida (somente admin)
 router.post('/', authMiddleware, adminMiddleware, productController.create);
-router.put('/:id', authMiddleware, adminMiddleware, productController.update);
-router.delete('/:id', authMiddleware, adminMiddleware, productController.delete);
-
-// 🔥 DROPI (somente admin)
-router.post(
-  '/import-dropi',
-  authMiddleware,
-  adminMiddleware,
-  productController.importFromDropi
-);
-
-router.get('/test-dropi', authMiddleware, adminMiddleware, productController.testDropiConnection);
-router.get('/dropi-products', authMiddleware, adminMiddleware, productController.listDropiProducts);
 
 module.exports = router;
