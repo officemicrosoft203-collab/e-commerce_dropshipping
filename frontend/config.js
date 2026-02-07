@@ -1,7 +1,6 @@
-// Arquivo para configurar a URL da API conforme o ambiente
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:5001'
-  : 'https://seu-backend.railway.app'; // Vai mudar depois
+  : 'https://satisfied-motivation-production.up.railway.app';
 
 const API_CONFIG = {
   baseURL: API_URL,
