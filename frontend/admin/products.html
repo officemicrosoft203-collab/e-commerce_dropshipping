@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Produtos - Painel Empresarial</title>
+
+  <!-- Bootstrap 5 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    :root{
+      --bs-primary: #4361ee;
+      --bs-secondary: #7209b7;
+      --bg-900: #0f172a;
+      --bg-800: #1e293b;
+      --border: #334155;
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+      background:var(--bg-900);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      background: linear-gradient(180deg, var(--bg-800) 0%, var(--bg-900) 100%);
+      border-right:1px solid var(--border);
+      position:fixed;
+      left:0;
+      top:0;
+      bottom:0;
+      width:260px;
+      min-height:100vh;
+      z-index:1000;
+      padding-bottom:64px;
+      display:flex;
+      flex-direction:column;
+    }
+    .sidebar-brand{ padding:1.25rem; border-bottom:1px solid var(--border); background:rgba(30,41,59,0.8) }
+    .sidebar-brand h5{ margin:0; font-size:1.05rem }
+    .sidebar-brand small{ color:#9aa6b3; display:block; margin-top:.25rem; font-size:.82rem }
+
+    .sidebar-nav{ padding:1rem 0; overflow:auto; flex:1 1 auto }
+    .sidebar-nav .nav-link{
+      color:#cbd5e1;
+      padding:.65rem 1rem;
+      margin:.25rem .5rem;
+      border-radius:.5rem;
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      transition:background .12s, transform .08s;
+      text-decoration:none;
+      cursor:pointer;
+    }
+    .sidebar-nav .nav-link i{ min-width:24px; text-align:center; font-size:1.05rem }
+    .sidebar-nav .nav-link .sidebar-label{ flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .sidebar-nav .nav-link .badge{ margin-left:auto; transform:none }
+
+    .sidebar-nav .nav-link:hover{ background: rgba(67,97,238,0.08); color:#fff; transform:none }
+    .sidebar-nav .nav-link.active{ background: linear-gradient(90deg, rgba(67,97,238,0.16), rgba(67,97,238,0.06)); color:#fff }
+
+    .sidebar-footer{
+      border-top:1px solid var(--border);
+      padding:.75rem 1rem;
+      font-size:.85rem;
+      color:#94a3b8;
+    }
+
+    /* Main content */
+    .main-content{ margin-left:260px; padding:20px; min-height:100vh; background:var(--bg-900) }
+
+    /* Panel Top */
+    .panel-top {
+      position: sticky;
+      top: 0;
+      z-index: 1039;
+      background: transparent;
+      padding: 0.45rem 0;
+    }
+    .panel-top .controls-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: 10px;
+      background: rgba(22, 29, 38, 0.9);
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+    }
+    .panel-top .controls-box .btn {
+      padding: 0.35rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    /* Cards */
+    .stat-card{
+      background: linear-gradient(135deg, var(--bg-800) 0%, #283345 100%);
+      border:1px solid #475569;
+      border-radius:1rem;
+      padding:1.25rem;
+      transition:transform .25s, box-shadow .25s;
+      height:100%;
+    }
+    .stat-card:hover{ transform:translateY(-4px); box-shadow:0 10px 20px rgba(0,0,0,.35); border-color:var(--bs-primary) }
+
+    .stat-icon{ width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:.5rem }
+    .stat-value{ font-size:1.9rem; font-weight:700; margin-bottom:.2rem }
+    .stat-label{ color:var(--muted); font-size:.82rem; text-transform:uppercase; letter-spacing:.9px }
+
+    .card-dashboard{ background:var(--bg-800); border:1px solid var(--border); border-radius:1rem; height:100% }
+    .card-header-dashboard{ background:transparent; border-bottom:1px solid var(--border); padding:1rem 1.25rem }
+
+    .table-dashboard td, .table-dashboard th{ border-bottom:1px solid var(--border) }
+
+    .text-muted-small{ color:#9aa6b3; font-size:.9rem }
+
+    @media (max-width:992px){
+      .sidebar{ transform:translateX(-100%); transition:transform .3s }
+      .sidebar.show{ transform:translateX(0) }
+      .main-content{ margin-left:0 }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar (IDÊNTICA AO DASHBOARD) -->
+  <aside class="sidebar" role="navigation" aria-label="Sidebar">
+    <div class="sidebar-brand">
+      <div class="d-flex align-items-center">
+        <div class="user-avatar me-3" style="width:40px;height:40px;background:linear-gradient(135deg, #4361ee, #7209b7);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;">A</div>
+        <div>
+          <h5 class="mb-0">Admin Dashboard</h5>
+          <small>Painel Empresarial</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Menu principal">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="dashboard.html">
+            <i class="bi bi-speedometer2"></i><span class="sidebar-label">Dashboard</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link active" href="products.html">
+            <i class="bi bi-box-seam"></i><span class="sidebar-label">Produtos</span>
+            <span class="badge bg-primary ms-auto" id="product-count">0</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="orders.html">
+            <i class="bi bi-cart-check"></i><span class="sidebar-label">Pedidos</span>
+            <span class="badge bg-success ms-auto" id="order-count">0</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="customers.html">
+            <i class="bi bi-people"></i><span class="sidebar-label">Clientes</span>
+            <span class="badge bg-info ms-auto" id="customer-count">0</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="analytics.html">
+            <i class="bi bi-graph-up"></i><span class="sidebar-label">Analytics</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="reports.html">
+            <i class="bi bi-file-earmark-bar-graph"></i><span class="sidebar-label">Relatórios</span>
+          </a>
+        </li>
+
+        <li class="nav-item mt-4">
+          <a class="nav-link" href="../index.html" target="_blank">
+            <i class="bi bi-shop"></i><span class="sidebar-label">Ver Loja</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="#" onclick="logout(); return false;">
+            <i class="bi bi-box-arrow-right"></i><span class="sidebar-label">Sair</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <small>© 2026 Mundo das Utilidades</small>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <!-- Top panel -->
+    <header class="panel-top">
+      <div class="container-fluid d-flex align-items-center">
+        <div class="controls-box">
+          <div class="btn-group">
+            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" type="button">
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-danger rounded-pill" id="notification-count">3</span>
+            </button>
+            <div class="dropdown-menu">
+              <h6 class="dropdown-header">Notificações</h6>
+              <div class="dropdown-item"><small>Novo pedido #1025</small><div class="text-muted">Há 5 minutos</div></div>
+              <div class="dropdown-item"><small>Produto esgotado: Mouse Gamer</small><div class="text-muted">Há 1 hora</div></div>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" type="button">
+              <i class="bi bi-person-circle"></i> Admin
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Configurações</a></li>
+              <li><a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Products Content -->
+    <section class="container-fluid py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-1">Gestão de Produtos</h2>
+          <p class="text-muted-small mb-0">Gerencie seu catálogo de dropshipping</p>
+        </div>
+        <div>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+            <i class="bi bi-plus-circle"></i> Novo Produto
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-lg-6">
+          <div class="stat-card">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-box-seam"></i></div>
+            <div class="stat-value" id="total-products">0</div>
+            <div class="stat-label">Total de Produtos</div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="stat-card">
+            <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-exclamation-triangle"></i></div>
+            <div class="stat-value" id="low-stock">0</div>
+            <div class="stat-label">Estoque Baixo</div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="stat-card">
+            <div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-x-circle"></i></div>
+            <div class="stat-value" id="out-of-stock">0</div>
+            <div class="stat-label">Esgotados</div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="stat-card">
+            <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-currency-dollar"></i></div>
+            <div class="stat-value" id="total-value">R$ 0</div>
+            <div class="stat-label">Valor Total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Table -->
+      <div class="card-dashboard">
+        <div class="card-header-dashboard d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Todos os Produtos</h5>
+          <div class="d-flex gap-2">
+            <input type="text" class="form-control form-control-sm" placeholder="Buscar produto..." id="search-product" style="width:250px;">
+            <button class="btn btn-outline-light btn-sm" onclick="loadProducts()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-dashboard mb-0">
+              <thead>
+                <tr>
+                  <th>Imagem</th>
+                  <th>Produto</th>
+                  <th>Categoria</th>
+                  <th>Preço</th>
+                  <th>Estoque</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="products-table">
+                <tr>
+                  <td colspan="7" class="text-center py-5">
+                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                    <span class="ms-2">Carregando produtos...</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Novo Produto -->
+  <div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark border-secondary">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title">Adicionar Novo Produto</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="productForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control bg-dark border-secondary text-light" name="name" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Preço</label>
+                <input type="number" class="form-control bg-dark border-secondary text-light" name="price" step="0.01" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descrição</label>
+              <textarea class="form-control bg-dark border-secondary text-light" name="description" rows="3"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Categoria</label>
+                <input type="text" class="form-control bg-dark border-secondary text-light" name="category">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Estoque</label>
+                <input type="number" class="form-control bg-dark border-secondary text-light" name="stock" value="0">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="saveProduct()">Salvar Produto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Check Auth
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        window.location.href = 'login.html';
+      }
+      loadProducts();
+    });
+
+    // Load Products
+    function loadProducts() {
+      setTimeout(() => {
+        try {
+          const products = [
+            { id: 1, name: 'Mouse Gamer RGB', category: 'Periféricos', price: 89.90, stock: 15, status: 'Ativo' },
+            { id: 2, name: 'Teclado Mecânico', category: 'Periféricos', price: 249.90, stock: 8, status: 'Ativo' },
+            { id: 3, name: 'Monitor 24" LED', category: 'Monitores', price: 899.90, stock: 22, status: 'Ativo' },
+            { id: 4, name: 'Headphone Bluetooth', category: 'Áudio', price: 199.90, stock: 0, status: 'Inativo' }
+          ];
+
+          // Update badges
+          document.getElementById('product-count').textContent = products.length;
+          document.getElementById('total-products').textContent = products.length;
+
+          const lowStock = products.filter(p => p.stock > 0 && p.stock < 10).length;
+          document.getElementById('low-stock').textContent = lowStock;
+
+          const outOfStock = products.filter(p => p.stock === 0).length;
+          document.getElementById('out-of-stock').textContent = outOfStock;
+
+          const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
+          document.getElementById('total-value').textContent = `R$ ${totalValue.toFixed(2)}`;
+
+          // Load table
+          const tbody = document.getElementById('products-table');
+          tbody.innerHTML = '';
+
+          products.forEach(p => {
+            let statusClass = 'bg-success';
+            let stockClass = 'text-success';
+
+            if (p.stock === 0) {
+              statusClass = 'bg-danger';
+              stockClass = 'text-danger';
+            } else if (p.stock < 10) {
+              statusClass = 'bg-warning';
+              stockClass = 'text-warning';
+            }
+
+            tbody.insertAdjacentHTML('beforeend', `
+              <tr>
+                <td><i class="bi bi-image" style="font-size:1.5rem;"></i></td>
+                <td><strong>${p.name}</strong></td>
+                <td>${p.category}</td>
+                <td>R$ ${p.price.toFixed(2)}</td>
+                <td class="${stockClass}">${p.stock} un.</td>
+                <td><span class="badge ${statusClass}">${p.status}</span></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            `);
+          });
+        } catch (e) {
+          console.warn('loadProducts error', e);
+        }
+      }, 600);
+    }
+
+    // Save Product
+    function saveProduct() {
+      alert('Produto salvo com sucesso!');
+      const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+      modal.hide();
+      document.getElementById('productForm').reset();
+      loadProducts();
+    }
+
+    // Logout
+    function logout() {
+      if (confirm('Tem certeza que deseja sair do painel administrativo?')) {
+        localStorage.removeItem('adminToken');
+        window.location.href = 'login.html';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Favoritos - Minha Loja Online</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .favorites-container {
+            min-height: 80vh;
+            padding: 40px 0;
+        }
+        
+        .favorites-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .favorites-count {
+            background: white;
+            color: #667eea;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .favorite-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .favorite-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .favorite-image {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            margin-right: 20px;
+        }
+        
+        .favorite-info {
+            flex: 1;
+        }
+        
+        .favorite-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 150px;
+        }
+        
+        .empty-favorites {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .favorite-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .favorite-image {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .favorite-actions {
+                flex-direction: row;
+                justify-content: center;
+                margin-top: 15px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Atualizada -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-shop me-2"></i>Minha Loja Online
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Produtos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="categories.html">Categorias</a>
+                    </li>
+                </ul>
+                
+                <!-- Menu de Usuário Dinâmico -->
+                <ul class="navbar-nav">
+                    <div class="user-menu">
+                        <!-- Estado: Não Logado -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.html" id="login-link">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+                            </a>
+                        </li>
+                        
+                        <!-- Estado: Logado (inicialmente escondido) -->
+                        <div id="user-logged" style="display: none;">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="user-dropdown">
+                                    <i class="bi bi-person-circle me-1"></i> <span id="user-name">Usuário</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person me-2"></i>Meu Perfil</a></li>
+                                    <li><a class="dropdown-item" href="orders.html"><i class="bi bi-receipt me-2"></i>Meus Pedidos</a></li>
+                                    <li><a class="dropdown-item" href="favorites.html"><i class="bi bi-heart me-2"></i>Favoritos</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" id="logout-link"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                                </ul>
+                            </li>
+                        </div>
+                        
+                        <!-- Carrinho -->
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="cart.html">
+                                <i class="bi bi-cart3 fs-5"></i>
+                                <span class="cart-badge">0</span>
+                            </a>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <div class="container favorites-container">
+        <div class="favorites-header">
+            <h1><i class="bi bi-heart-fill me-2"></i>Meus Favoritos</h1>
+            <p>Produtos que você salvou para comprar depois</p>
+            <div class="favorites-count" id="favoritesCount">0 produtos</div>
+        </div>
+        
+        <!-- Lista de Favoritos -->
+        <div id="favoritesList">
+            <!-- Favoritos serão carregados via JS -->
+        </div>
+        
+        <!-- Ações em Massa -->
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Gerenciar Favoritos</h5>
+                            <small class="text-muted">Ações em massa para seus produtos favoritos</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-danger" id="clearAllBtn">
+                                <i class="bi bi-trash me-2"></i>Limpar Todos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="text-center pt-3">
+                <p class="mb-0">&copy; 2023 Minha Loja Online</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script de Autenticação -->
+    <script src="js/auth.js"></script>
+    
+    <!-- Dados de exemplo de produtos -->
+    <script>
+        const sampleProducts = [
+            {
+                id: 1,
+                name: "Mouse Gamer RGB",
+                description: "Mouse com iluminação RGB, 6 botões programáveis, 6400 DPI.",
+                price: 89.90,
+                category: "perifericos",
+                image: "uploads/mouse.jpg",
+                inStock: true
+            },
+            {
+                id: 2,
+                name: "Cadeira Gamer Profissional",
+                description: "Cadeira ergonômica com ajuste de altura e apoio lombar.",
+                price: 1299.90,
+                category: "moveis",
+                image: "uploads/cadeira.jpg",
+                inStock: true
+            },
+            {
+                id: 3,
+                name: "Monitor 24\" Full HD 144Hz",
+                description: "Monitor 144Hz, 1ms, ideal para jogos e trabalho.",
+                price: 899.90,
+                category: "monitores",
+                image: "uploads/monitor.jpg",
+                inStock: true
+            }
+        ];
+    </script>
+    
+    <script>
+        // Sistema de Favoritos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar se está logado
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Carregar favoritos
+            loadFavorites();
+            
+            // Configurar botão limpar todos
+            document.getElementById('clearAllBtn').addEventListener('click', clearAllFavorites);
+            
+            function loadFavorites() {
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.id === currentUser.id);
+                const container = document.getElementById('favoritesList');
+                const countElement = document.getElementById('favoritesCount');
+                
+                if (!user || !user.favorites || user.favorites.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-favorites">
+                            <div class="empty-icon">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <h3 class="text-muted">Sua lista de favoritos está vazia</h3>
+                            <p class="text-muted mb-4">Adicione produtos que você gosta para encontrá-los facilmente depois</p>
+                            <a href="index.html" class="btn btn-primary">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar às Compras
+                            </a>
+                        </div>
+                    `;
+                    countElement.textContent = '0 produtos';
+                    return;
+                }
+                
+                // Contar favoritos
+                countElement.textContent = `${user.favorites.length} produto${user.favorites.length !== 1 ? 's' : ''}`;
+                
+                // Carregar favoritos
+                let html = '';
+                user.favorites.forEach(favId => {
+                    const product = sampleProducts.find(p => p.id === favId);
+                    if (product) {
+                        html += `
+                            <div class="favorite-item" data-product-id="${product.id}">
+                                <img src="${product.image}" class="favorite-image" 
+                                     onerror="this.src='https://via.placeholder.com/120x120?text=${encodeURIComponent(product.name)}'">
+                                <div class="favorite-info">
+                                    <h4 class="mb-2">${product.name}</h4>
+                                    <p class="text-muted mb-2">${product.description}</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="h4 text-primary me-3">R$ ${product.price.toFixed(2)}</span>
+                                        ${product.inStock ? 
+                                            '<span class="badge bg-success">Em estoque</span>' : 
+                                            '<span class="badge bg-danger">Esgotado</span>'
+                                        }
+                                    </div>
+                                </div>
+                                <div class="favorite-actions">
+                                    <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                        <i class="bi bi-cart-plus me-2"></i>Comprar
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="removeFavorite(${product.id})">
+                                        <i class="bi bi-trash me-2"></i>Remover
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                container.innerHTML = html;
+            }
+            
+            window.addToCart = function(productId) {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const product = sampleProducts.find(p => p.id === productId);
+                
+                if (!product) return;
+                
+                const existingItem = cart.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        quantity: 1,
+                        image: product.image
+                    });
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                showNotification(`${product.name} adicionado ao carrinho!`, 'success');
+                
+                // Atualizar badge do carrinho
+                if (window.auth && window.auth.updateCartBadge) {
+                    window.auth.updateCartBadge();
+                }
+            }
+            
+            window.removeFavorite = function(productId) {
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].favorites = users[userIndex].favorites.filter(id => id !== productId);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Remover elemento do DOM
+                    const item = document.querySelector(`[data-product-id="${productId}"]`);
+                    if (item) item.remove();
+                    
+                    loadFavorites();
+                    showNotification('Produto removido dos favoritos', 'info');
+                }
+            }
+            
+            function clearAllFavorites() {
+                if (!confirm('Tem certeza que deseja remover todos os favoritos?')) return;
+                
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].favorites = [];
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    loadFavorites();
+                    showNotification('Todos os favoritos foram removidos', 'info');
+                }
+            }
+            
+            function showNotification(message, type = 'info') {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                alert.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="bi ${type === 'success' ? 'bi-check-circle' : type === 'danger' ? 'bi-exclamation-circle' : 'bi-info-circle'} me-2 fs-5"></i>
+                        <div>${message}</div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                document.body.appendChild(alert);
+                
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

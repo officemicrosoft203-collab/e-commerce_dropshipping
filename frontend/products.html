@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Produtos | Mundo das Utilidades</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS do projeto -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="index.html">🏪 Mundo das Utilidades</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Início</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="products.html">Produtos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="cart.html">Carrinho</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- ========================================== -->
+
+<div class="container mt-5">
+    
+<!-- BREADCRUMB -->
+<nav class="breadcrumb-container mb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+            <a href="index.html">Início</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Produtos
+        </li>
+    </ol>
+</nav>
+
+    <!-- TOPO (titulo + ordenar) -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Produtos</h4>
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-muted small">Ordenar por:</span>
+            <select class="form-select form-select-sm" style="width: 180px;">
+                <option>Relevância</option>
+                <option>Menor preço</option>
+                <option>Maior preço</option>
+                <option>Mais vendidos</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- ========== FILTROS (LATERAL) ========== -->
+        <aside class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm p-3">
+                <h6 class="fw-bold mb-3">Filtrar</h6>
+
+                <!-- CATEGORIAS -->
+                <div class="mb-4">
+                    <p class="fw-semibold mb-2">Categorias</p>
+                    <ul class="list-unstyled small">
+                        <li class="mb-1"><a href="#" class="text-decoration-none text-dark">Todos os produtos</a></li>
+                        <li class="mb-1"><a href="#" class="text-decoration-none text-dark">Eletrônicos</a></li>
+                        <li class="mb-1"><a href="#" class="text-decoration-none text-dark">Acessórios</a></li>
+                        <li class="mb-1"><a href="#" class="text-decoration-none text-dark">Casa & Utilidades</a></li>
+                    </ul>
+                </div>
+
+                <!-- PREÇO -->
+                <div class="mb-4">
+                    <p class="fw-semibold mb-2">Preço</p>
+                    <input type="range" class="form-range" min="0" max="5000">
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>R$ 0</span>
+                        <span>R$ 5000</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary w-100 mb-2">Aplicar filtros</button>
+                <button class="btn btn-outline-secondary w-100">Limpar</button>
+            </div>
+        </aside>
+
+        <!-- ========== PRODUTOS ========== -->
+        <section class="col-md-9">
+            <div class="row g-4" id="productsContainer">
+                <!-- Produtos via JS -->
+            </div>
+        </section>
+    </div>
+
+</div>
+
+<!-- JS -->
+<script src="js/products.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/store-products.js"></script>
+</body>
+</html>

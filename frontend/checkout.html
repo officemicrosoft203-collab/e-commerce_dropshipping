@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra - Minha Loja Online</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .checkout-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .checkout-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #dee2e6;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+        }
+        
+        .step.active .step-circle {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+        
+        .step.completed .step-circle {
+            background: #198754;
+            color: white;
+            border-color: #198754;
+        }
+        
+        .checkout-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f3ff;
+        }
+        
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f3ff;
+        }
+        
+        .payment-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .payment-card:hover,
+        .payment-card.active {
+            border-color: #0d6efd;
+            background: rgba(13, 110, 253, 0.05);
+        }
+        
+        .secure-badge {
+            background: #198754;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-steps {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .checkout-steps::before {
+                display: none;
+            }
+            
+            .step {
+                text-align: left;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .step-circle {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Atualizada -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-shop me-2"></i>Minha Loja Online
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Produtos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="categories.html">Categorias</a>
+                    </li>
+                </ul>
+                
+                <!-- Menu de Usuário Dinâmico -->
+                <ul class="navbar-nav">
+                    <div class="user-menu">
+                        <!-- Estado: Não Logado -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.html" id="login-link">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+                            </a>
+                        </li>
+                        
+                        <!-- Estado: Logado (inicialmente escondido) -->
+                        <div id="user-logged" style="display: none;">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="user-dropdown">
+                                    <i class="bi bi-person-circle me-1"></i> <span id="user-name">Usuário</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person me-2"></i>Meu Perfil</a></li>
+                                    <li><a class="dropdown-item" href="orders.html"><i class="bi bi-receipt me-2"></i>Meus Pedidos</a></li>
+                                    <li><a class="dropdown-item" href="favorites.html"><i class="bi bi-heart me-2"></i>Favoritos</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" id="logout-link"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                                </ul>
+                            </li>
+                        </div>
+                        
+                        <!-- Carrinho -->
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="cart.html">
+                                <i class="bi bi-cart3 fs-5"></i>
+                                <span class="cart-badge">0</span>
+                            </a>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Passos do Checkout -->
+    <div class="container mt-5">
+        <div class="checkout-steps">
+            <div class="step completed">
+                <div class="step-circle"><i class="bi bi-cart-check"></i></div>
+                <div>Carrinho</div>
+            </div>
+            <div class="step active">
+                <div class="step-circle">2</div>
+                <div>Pagamento</div>
+            </div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <div>Confirmação</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- Formulário de Pagamento -->
+            <div class="col-lg-7">
+                <div class="checkout-section">
+                    <h4 class="section-title"><i class="bi bi-credit-card me-2"></i>Informações de Pagamento</h4>
+                    
+                    <!-- Cartão de Crédito -->
+                    <div class="payment-card active" id="creditCardSection">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                            <label class="form-check-label fw-bold" for="creditCard">
+                                Cartão de Crédito
+                            </label>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="form-label">Número do Cartão</label>
+                                    <input type="text" class="form-control" placeholder="1234 5678 9012 3456">
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <label class="form-label">Validade</label>
+                                    <input type="text" class="form-control" placeholder="MM/AA">
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <label class="form-label">CVV</label>
+                                    <input type="text" class="form-control" placeholder="123">
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <label class="form-label">Nome no Cartão</label>
+                                    <input type="text" class="form-control" placeholder="Nome completo">
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <label class="form-label">Parcelas</label>
+                                    <select class="form-select">
+                                        <option>1x R$ 259,90 sem juros</option>
+                                        <option>2x R$ 129,95 sem juros</option>
+                                        <option>3x R$ 86,63 sem juros</option>
+                                        <option>4x R$ 64,98 sem juros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PIX -->
+                    <div class="payment-card" id="pixSection">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="pix">
+                            <label class="form-check-label fw-bold" for="pix">
+                                PIX
+                            </label>
+                        </div>
+                        <div class="mt-3 text-center" id="pixContent" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Após confirmar a compra, você receberá o QR Code para pagamento
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Boleto -->
+                    <div class="payment-card" id="boletoSection">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="boleto">
+                            <label class="form-check-label fw-bold" for="boleto">
+                                Boleto Bancário
+                            </label>
+                        </div>
+                        <div class="mt-3" id="boletoContent" style="display: none;">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                O boleto será gerado após a confirmação da compra. Prazo de 3 dias úteis para pagamento.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Informações de Entrega -->
+                    <div class="checkout-section mt-4">
+                        <h4 class="section-title"><i class="bi bi-truck me-2"></i>Endereço de Entrega</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">CEP</label>
+                                <input type="text" class="form-control" placeholder="00000-000">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select">
+                                    <option>São Paulo</option>
+                                    <option>Rio de Janeiro</option>
+                                    <option>Minas Gerais</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8 mt-3">
+                                <label class="form-label">Endereço</label>
+                                <input type="text" class="form-control" placeholder="Rua, Avenida, etc">
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <label class="form-label">Número</label>
+                                <input type="text" class="form-control" placeholder="123">
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="form-label">Cidade</label>
+                                <input type="text" class="form-control" placeholder="São Paulo">
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="form-label">Complemento</label>
+                                <input type="text" class="form-control" placeholder="Apto, Casa, etc">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumo do Pedido -->
+            <div class="col-lg-5">
+                <div class="checkout-section sticky-top" style="top: 20px;">
+                    <h4 class="section-title"><i class="bi bi-receipt me-2"></i>Resumo do Pedido</h4>
+                    
+                    <div id="orderItems">
+                        <!-- Itens carregados via JS -->
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="order-summary-item">
+                            <span>Subtotal</span>
+                            <span id="checkoutSubtotal">R$ 0,00</span>
+                        </div>
+                        <div class="order-summary-item">
+                            <span>Frete</span>
+                            <span id="checkoutShipping">Grátis</span>
+                        </div>
+                        <div class="order-summary-item">
+                            <span>Desconto</span>
+                            <span class="text-success" id="checkoutDiscount">- R$ 0,00</span>
+                        </div>
+                        <div class="order-summary-item fw-bold fs-5">
+                            <span>Total</span>
+                            <span id="checkoutTotal">R$ 0,00</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Termos e Condições -->
+                    <div class="form-check mt-4">
+                        <input class="form-check-input" type="checkbox" id="terms">
+                        <label class="form-check-label small" for="terms">
+                            Concordo com os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a>
+                        </label>
+                    </div>
+                    
+                    <!-- Botão Finalizar -->
+                    <button class="btn btn-primary w-100 mt-4 py-3 fs-5" id="confirmOrder">
+                        <i class="bi bi-lock-fill me-2"></i>Confirmar Pedido
+                    </button>
+                    
+                    <!-- Segurança -->
+                    <div class="text-center mt-3">
+                        <span class="secure-badge">
+                            <i class="bi bi-shield-check me-1"></i>Compra 100% Segura
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="text-center pt-3">
+                <p class="mb-0">&copy; 2023 Minha Loja Online</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script de Autenticação -->
+    <script src="js/auth.js"></script>
+    
+    <script>
+        // Verificar se está logado
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Carregar dados do carrinho
+            loadOrderSummary();
+            
+            // Configurar métodos de pagamento
+            document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Esconder todos os conteúdos
+                    document.getElementById('pixContent').style.display = 'none';
+                    document.getElementById('boletoContent').style.display = 'none';
+                    
+                    // Mostrar conteúdo do método selecionado
+                    if (this.id === 'pix') {
+                        document.getElementById('pixContent').style.display = 'block';
+                    } else if (this.id === 'boleto') {
+                        document.getElementById('boletoContent').style.display = 'block';
+                    }
+                });
+            });
+            
+            // Finalizar pedido
+            document.getElementById('confirmOrder').addEventListener('click', function() {
+                const terms = document.getElementById('terms');
+                
+                if (!terms.checked) {
+                    alert('Por favor, aceite os termos e condições para continuar.');
+                    return;
+                }
+                
+                // Verificar se o carrinho está vazio
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                if (cart.length === 0) {
+                    alert('Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.');
+                    return;
+                }
+                
+                // Simular processamento
+                this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processando...';
+                this.disabled = true;
+                
+                // Criar pedido
+                const order = {
+                    id: Date.now(),
+                    date: new Date().toISOString(),
+                    items: cart,
+                    total: parseFloat(document.getElementById('checkoutTotal').textContent.replace('R$ ', '').replace(',', '.')),
+                    status: 'Pendente',
+                    paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').id
+                };
+                
+                // Salvar pedido no histórico do usuário
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                
+                if (userIndex !== -1) {
+                    if (!users[userIndex].orders) {
+                        users[userIndex].orders = [];
+                    }
+                    users[userIndex].orders.push(order);
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+                
+                setTimeout(() => {
+                    // Limpar carrinho
+                    localStorage.removeItem('cart');
+                    
+                    // Atualizar badge do carrinho
+                    if (window.auth && window.auth.updateCartBadge) {
+                        window.auth.updateCartBadge();
+                    }
+                    
+                    // Redirecionar para página de confirmação
+                    window.location.href = 'order-confirmation.html';
+                }, 2000);
+            });
+            
+            function loadOrderSummary() {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const container = document.getElementById('orderItems');
+                
+                if (cart.length === 0) {
+                    container.innerHTML = '<p class="text-muted">Carrinho vazio</p>';
+                    return;
+                }
+                
+                let html = '';
+                cart.forEach(item => {
+                    html += `
+                        <div class="order-summary-item">
+                            <div>
+                                <div class="fw-bold">${item.name}</div>
+                                <small class="text-muted">Quantidade: ${item.quantity}</small>
+                            </div>
+                            <div class="text-end">
+                                <div>R$ ${(item.price * item.quantity).toFixed(2)}</div>
+                                <small class="text-muted">R$ ${item.price.toFixed(2)} cada</small>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+                // Calcular totais
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const shipping = subtotal > 199 ? 0 : 15.90;
+                const total = subtotal + shipping;
+                
+                document.getElementById('checkoutSubtotal').textContent = `R$ ${subtotal.toFixed(2)}`;
+                document.getElementById('checkoutShipping').textContent = shipping === 0 ? 'Grátis' : `R$ ${shipping.toFixed(2)}`;
+                document.getElementById('checkoutTotal').textContent = `R$ ${total.toFixed(2)}`;
+            }
+        });
+    </script>
+</body>
+</html>

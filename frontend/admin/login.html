@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - Painel Gerencial</title>
+    <!-- Bootstrap 5.3 -->
+    <link href="../bootstrap-5.3.8-examples/assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --success-color: #06d6a0;
+            --warning-color: #ffd166;
+            --danger-color: #ef476f;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .login-title {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .login-subtitle {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-label i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+        
+        .form-control {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .input-group-text {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .back-to-store {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+        
+        .back-to-store:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+        
+        .error-alert {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .login-card {
+                background: rgba(30, 41, 59, 0.95);
+                color: #f1f5f9;
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+            
+            .login-title {
+                color: #f1f5f9;
+            }
+            
+            .login-subtitle {
+                color: #94a3b8;
+            }
+            
+            .form-label {
+                color: #cbd5e1;
+            }
+            
+            .form-control {
+                background: #1e293b;
+                border-color: #475569;
+                color: #f1f5f9;
+            }
+            
+            .form-control:focus {
+                background: #1e293b;
+                color: #f1f5f9;
+            }
+            
+            .input-group-text {
+                background: #334155;
+                border-color: #475569;
+                color: #cbd5e1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <h1 class="login-title">Painel Administrativo</h1>
+                <p class="login-subtitle">Acesso restrito ao gerenciamento da loja</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="form-label" for="username">
+                        <i class="bi bi-person-circle"></i> Usuário
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               id="username" 
+                               placeholder="Digite seu usuário"
+                               value="admin"
+                               required
+                               autocomplete="username">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label" for="password">
+                        <i class="bi bi-key"></i> Senha
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" 
+                               class="form-control" 
+                               id="password" 
+                               placeholder="Digite sua senha"
+                               value="admin123"
+                               required
+                               autocomplete="current-password">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-login" id="loginBtn">
+                    <i class="bi bi-box-arrow-in-right"></i> Entrar no Painel
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <a href="../index.html" class="back-to-store">
+                    <i class="bi bi-arrow-left"></i> Voltar para a Loja
+                </a>
+            </div>
+            
+            <!-- Alert de erro -->
+            <div class="alert alert-danger mt-3 d-none error-alert" id="errorAlert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span id="errorMessage">Erro de conexão com o servidor</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Verificar se já está logado
+            if (localStorage.getItem('adminToken')) {
+                window.location.href = 'dashboard.html';
+            }
+            
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Mostrar loading no botão
+                const originalText = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Entrando...';
+                loginBtn.disabled = true;
+                
+                // Esconder erro anterior
+                errorAlert.classList.add('d-none');
+                
+                try {
+                    // Tentar login na API
+                    const response = await fetch('http://localhost:5001/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.token) {
+                        // Salvar token
+                        localStorage.setItem('adminToken', data.token);
+                        localStorage.setItem('adminUser', JSON.stringify(data.user));
+                        
+                        // Redirecionar para dashboard
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        // Mostrar erro
+                        errorMessage.textContent = data.error || 'Credenciais inválidas';
+                        errorAlert.classList.remove('d-none');
+                        loginBtn.innerHTML = originalText;
+                        loginBtn.disabled = false;
+                    }
+                    
+                } catch (error) {
+                    console.error('Erro login:', error);
+                    
+                    // Fallback: login local se API falhar
+                    if (username === 'admin' && password === 'admin123') {
+                        localStorage.setItem('adminToken', 'local-token-' + Date.now());
+                        localStorage.setItem('adminUser', JSON.stringify({ 
+                            username: 'admin', 
+                            role: 'admin' 
+                        }));
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        errorMessage.textContent = 'Erro de conexão. Usando credenciais padrão: admin / admin123';
+                        errorAlert.classList.remove('d-none');
+                        loginBtn.innerHTML = originalText;
+                        loginBtn.disabled = false;
+                    }
+                }
+            });
+            
+            // Atalho de teclado: Enter para enviar
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !loginBtn.disabled) {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }
+            });
+            
+            // Auto-focus no primeiro campo
+            document.getElementById('username').focus();
+        });
+        
+        // Adicionar classe spin para animação
+        const style = document.createElement('style');
+        style.textContent = `
+            .spin {
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

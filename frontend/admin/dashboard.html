@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Painel Empresarial</title>
+
+  <!-- Bootstrap 5 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bs-primary: #4361ee;
+      --bs-secondary: #7209b7;
+      --bg-900: #0f172a;
+      --bg-800: #1e293b;
+      --border: #334155;
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+      background:var(--bg-900);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      background: linear-gradient(180deg, var(--bg-800) 0%, var(--bg-900) 100%);
+      border-right:1px solid var(--border);
+      position:fixed;
+      left:0;
+      top:0;
+      bottom:0;
+      width:260px;
+      min-height:100vh;
+      z-index:1000;
+      padding-bottom:64px;
+      display:flex;
+      flex-direction:column;
+    }
+    .sidebar-brand{ padding:1.25rem; border-bottom:1px solid var(--border); background:rgba(30,41,59,0.8) }
+    .sidebar-brand h5{ margin:0; font-size:1.05rem }
+    .sidebar-brand small{ color:#9aa6b3; display:block; margin-top:.25rem; font-size:.82rem }
+
+    .sidebar-nav{ padding:1rem 0; overflow:auto; flex:1 1 auto }
+    .sidebar-nav .nav-link{
+      color:#cbd5e1;
+      padding:.65rem 1rem;
+      margin:.25rem .5rem;
+      border-radius:.5rem;
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      transition:background .12s, transform .08s;
+      cursor: pointer;
+    }
+    .sidebar-nav .nav-link i{ min-width:24px; text-align:center; font-size:1.05rem }
+    .sidebar-nav .nav-link .sidebar-label{ flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+    .sidebar-nav .nav-link .badge{ margin-left:auto; transform:none }
+
+    .sidebar-nav .nav-link:hover{ background: rgba(67,97,238,0.08); color:#fff; transform:none }
+    .sidebar-nav .nav-link.active{ background: linear-gradient(90deg, rgba(67,97,238,0.16), rgba(67,97,238,0.06)); color:#fff }
+
+    .menu-group-title{
+      display:block;
+      padding:.5rem 1rem;
+      color:var(--muted);
+      font-size:.80rem;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      margin-top:.5rem;
+    }
+    .menu-group + .menu-group{ border-top:1px solid rgba(255,255,255,0.03) }
+
+    .sidebar-footer{
+      border-top:1px solid var(--border);
+      padding:.75rem 1rem;
+      font-size:.85rem;
+      color:#94a3b8;
+    }
+
+    /* Main content */
+    .main-content{ margin-left:260px; padding:20px; min-height:100vh; background:var(--bg-900) }
+
+    /* Panel Top - Fixed Position */
+    .panel-top {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1039;
+      background: transparent;
+      padding: 0;
+      pointer-events: none;
+    }
+
+    .panel-top .controls-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: 10px;
+      background: rgba(22, 29, 38, 0.95);
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+      backdrop-filter: blur(8px);
+      pointer-events: all;
+    }
+
+    .panel-top .controls-box .btn {
+      padding: 0.35rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    
+    @media (max-width: 992px) {
+      .panel-top { top: auto; bottom: 20px; right: 20px; }
+      .panel-top .controls-box { margin-left: auto; }
+    }
+
+    /* Cards */
+    .stat-card{
+      background: linear-gradient(135deg, var(--bg-800) 0%, #283345 100%);
+      border:1px solid #475569;
+      border-radius:1rem;
+      padding:1.25rem;
+      transition:transform .25s, box-shadow .25s;
+      height:100%;
+    }
+    .stat-card:hover{ transform:translateY(-4px); box-shadow:0 10px 20px rgba(0,0,0,.35); border-color:var(--bs-primary) }
+
+    .stat-icon{ width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:.5rem }
+    .stat-value{ font-size:1.9rem; font-weight:700; margin-bottom:.2rem }
+    .stat-label{ color:var(--muted); font-size:.82rem; text-transform:uppercase; letter-spacing:.9px }
+
+    .card-dashboard{ background:var(--bg-800); border:1px solid var(--border); border-radius:1rem; height:100% }
+    .card-header-dashboard{ background:transparent; border-bottom:1px solid var(--border); padding:1rem 1.25rem }
+
+    .table-dashboard td, .table-dashboard th{ border-bottom:1px solid var(--border) }
+
+    .chart-container {
+      height: 360px;
+      position: relative;
+    }
+
+    .text-muted-small{ color:#9aa6b3; font-size:.9rem }
+
+    /* Seções */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* Header Info */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dashboard-header-left h2 {
+      margin-bottom: 0.5rem;
+    }
+
+    .dashboard-header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width:992px){
+      .sidebar{ transform:translateX(-100%); transition:transform .3s }
+      .sidebar.show{ transform:translateX(0) }
+      .main-content{ margin-left:0 }
+      .chart-container { height: 260px; }
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" role="navigation" aria-label="Sidebar">
+    <div class="sidebar-brand">
+      <div class="d-flex align-items-center">
+        <div class="user-avatar me-3" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg, #4361ee, #7209b7);display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">A</div>
+        <div>
+          <h5 class="mb-0">Admin Dashboard</h5>
+          <small>Painel Empresarial</small>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Menu principal">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="#" onclick="navigateTo('dashboard'); return false;">
+            <i class="bi bi-speedometer2"></i><span class="sidebar-label">Dashboard</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="navigateTo('products'); return false;">
+            <i class="bi bi-box-seam"></i><span class="sidebar-label">Produtos</span>
+            <span class="badge bg-primary ms-auto" id="product-count">0</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="navigateTo('orders'); return false;">
+            <i class="bi bi-cart-check"></i><span class="sidebar-label">Pedidos</span>
+            <span class="badge bg-success ms-auto" id="order-count">0</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="navigateTo('customers'); return false;">
+            <i class="bi bi-people"></i><span class="sidebar-label">Clientes</span>
+            <span class="badge bg-info ms-auto" id="customer-count">0</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="navigateTo('analytics'); return false;">
+            <i class="bi bi-graph-up"></i><span class="sidebar-label">Analytics</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="navigateTo('reports'); return false;">
+            <i class="bi bi-file-earmark-bar-graph"></i><span class="sidebar-label">Relatórios</span>
+          </a>
+        </li>
+
+        <li class="nav-item mt-4">
+          <a class="nav-link" href="../index.html" target="_blank" title="Abrir loja (nova aba)">
+            <i class="bi bi-shop"></i><span class="sidebar-label">Ver Loja</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="#" onclick="logout(); return false;">
+            <i class="bi bi-box-arrow-right"></i><span class="sidebar-label">Sair</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <small>© 2026 Mundo das Utilidades</small>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <!-- Top Panel - Fixed (Notificações e Admin) -->
+    <header class="panel-top">
+      <div class="controls-box">
+        <div class="btn-group">
+          <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" type="button">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-danger rounded-pill" id="notification-count">3</span>
+          </button>
+          <div class="dropdown-menu">
+            <h6 class="dropdown-header">Notificações</h6>
+            <div class="dropdown-item"><small>Novo pedido #1025</small><div class="text-muted">Há 5 minutos</div></div>
+            <div class="dropdown-item"><small>Produto esgotado: Mouse Gamer</small><div class="text-muted">Há 1 hora</div></div>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" type="button">
+            <i class="bi bi-person-circle"></i> Admin
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Configurações</a></li>
+            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Section -->
+    <section class="section active" id="dashboard">
+      <div class="container-fluid py-4">
+        <!-- Dashboard Header - Data e Botão Atualizar -->
+        <div class="dashboard-header">
+          <div class="dashboard-header-left">
+            <h2 class="mb-1">Dashboard Empresarial</h2>
+            <p class="text-muted-small mb-0">Visão geral do seu negócio de dropshipping</p>
+          </div>
+          <div class="dashboard-header-right">
+            <span class="text-muted-small" id="current-date"></span>
+            <button class="btn btn-outline-light btn-sm" onclick="refreshDashboard()"><i class="bi bi-arrow-clockwise"></i> Atualizar</button>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+          <div class="col-xl-3 col-lg-6">
+            <div class="stat-card">
+              <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-currency-dollar"></i></div>
+              <div class="stat-value" id="total-revenue">R$ 0</div>
+              <div class="stat-label">Receita Total</div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6">
+            <div class="stat-card">
+              <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-cart-check"></i></div>
+              <div class="stat-value" id="total-orders">0</div>
+              <div class="stat-label">Pedidos Hoje</div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6">
+            <div class="stat-card">
+              <div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-box-seam"></i></div>
+              <div class="stat-value" id="total-products">0</div>
+              <div class="stat-label">Produtos Ativos</div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-6">
+            <div class="stat-card">
+              <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-people"></i></div>
+              <div class="stat-value" id="total-customers">0</div>
+              <div class="stat-label">Clientes Ativos</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+          <div class="col-xl-9">
+            <div class="card-dashboard">
+              <div class="card-header-dashboard d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Vendas (Últimos 30 dias)</h5>
+                <select class="form-select form-select-sm w-auto" onchange="updateChart(this.value)">
+                  <option value="30">30 dias</option>
+                  <option value="7">7 dias</option>
+                  <option value="90">90 dias</option>
+                </select>
+              </div>
+              <div class="card-body"><div class="chart-container"><canvas id="salesChart"></canvas></div></div>
+            </div>
+          </div>
+          <div class="col-xl-3">
+            <div class="card-dashboard">
+              <div class="card-header-dashboard"><h5 class="mb-0">Categorias Mais Vendidas</h5></div>
+              <div class="card-body"><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tables Row -->
+        <div class="row g-4">
+          <div class="col-xl-6">
+            <div class="card-dashboard">
+              <div class="card-header-dashboard d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Pedidos Recentes</h5>
+                <a href="#" onclick="navigateTo('orders'); return false;" class="text-primary small">Ver todos</a>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-dashboard">
+                    <thead><tr><th>Pedido</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
+                    <tbody id="recent-orders"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-6">
+            <div class="card-dashboard">
+              <div class="card-header-dashboard d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Produtos Mais Vendidos</h5>
+                <a href="#" onclick="navigateTo('products'); return false;" class="text-primary small">Ver todos</a>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-dashboard">
+                    <thead><tr><th>Produto</th><th>Vendas</th><th>Estoque</th><th>Ações</th></tr></thead>
+                    <tbody id="top-products"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="section" id="products">
+      <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="mb-1">Gestão de Produtos</h2>
+            <p class="text-muted-small mb-0">Gerencie seu catálogo de dropshipping</p>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="card-dashboard">
+              <div class="card-header-dashboard"><h5 class="mb-0">Todos os Produtos</h5></div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-dashboard">
+                    <thead><tr><th>Produto</th><th>Preço</th><th>Estoque</th><th>Status</th></tr></thead>
+                    <tbody id="products-table"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Orders Section -->
+    <section class="section" id="orders">
+      <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="mb-1">Gestão de Pedidos</h2>
+            <p class="text-muted-small mb-0">Gerencie e acompanhe os pedidos dos clientes</p>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="card-dashboard">
+              <div class="card-header-dashboard"><h5 class="mb-0">Pedidos</h5></div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-dashboard">
+                    <thead><tr><th>Pedido</th><th>Cliente</th><th>Data</th><th>Valor</th><th>Status</th></tr></thead>
+                    <tbody id="orders-table"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customers Section -->
+    <section class="section" id="customers">
+      <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="mb-1">Gestão de Clientes</h2>
+            <p class="text-muted-small mb-0">Gerencie sua base de clientes</p>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="card-dashboard">
+              <div class="card-header-dashboard"><h5 class="mb-0">Clientes</h5></div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-dashboard">
+                    <thead><tr><th>Nome</th><th>Email</th><th>Pedidos</th><th>Total Gasto</th></tr></thead>
+                    <tbody id="customers-table"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Analytics Section -->
+    <section class="section" id="analytics">
+      <div class="container-fluid py-4">
+        <h2 class="mb-4">Analytics</h2>
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle"></i> Seção de Analytics em desenvolvimento
+        </div>
+      </div>
+    </section>
+
+    <!-- Reports Section -->
+    <section class="section" id="reports">
+      <div class="container-fluid py-4">
+        <h2 class="mb-4">Relatórios</h2>
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle"></i> Seção de Relatórios em desenvolvimento
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // ============================================
+    // SISTEMA DE NAVEGAÇÃO
+    // ============================================
+    function navigateTo(section) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => l.classList.remove('active'));
+      
+      document.getElementById(section).classList.add('active');
+      
+      const activeLink = document.querySelector(`.sidebar-nav .nav-link[onclick*="${section}"]`);
+      if (activeLink) activeLink.classList.add('active');
+      
+      if (section === 'dashboard') loadDashboardData();
+      if (section === 'products') loadProductsSection();
+      if (section === 'orders') loadOrdersSection();
+      if (section === 'customers') loadCustomersSection();
+    }
+
+    // ============================================
+    // CARREGAMENTO DE DADOS (LOJA)
+    // ============================================
+    function getStoreProducts() {
+      try {
+        const data = localStorage.getItem("products");
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        console.warn("Erro ao ler produtos", e);
+        return [];
+      }
+    }
+
+    function getStoreOrders() {
+      try {
+        const data = localStorage.getItem("orders");
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function getStoreCustomers() {
+      try {
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+        return users;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // ============================================
+    // DASHBOARD PRINCIPAL
+    // ============================================
+    function loadDashboardData() {
+      const products = getStoreProducts();
+      const orders = getStoreOrders();
+      const customers = getStoreCustomers();
+
+      document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+
+      document.getElementById('product-count').textContent = products.length;
+      document.getElementById('order-count').textContent = orders.length;
+      document.getElementById('customer-count').textContent = customers.length;
+
+      document.getElementById('total-products').textContent = products.length;
+      document.getElementById('total-orders').textContent = orders.length;
+      document.getElementById('total-customers').textContent = customers.length;
+
+      const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+      document.getElementById('total-revenue').textContent = `R$ ${totalRevenue.toFixed(2)}`;
+
+      loadRecentOrders();
+      loadTopProducts();
+      initCharts();
+    }
+
+    function loadRecentOrders() {
+      const orders = getStoreOrders().slice(0, 5);
+      const tbody = document.getElementById('recent-orders');
+      
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Nenhum pedido</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td><strong>#${o.id || 'N/A'}</strong></td>
+          <td>${o.customer || 'Cliente'}</td>
+          <td>R$ ${(o.total || 0).toFixed(2)}</td>
+          <td><span class="badge bg-info">${o.status || 'Pendente'}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function loadTopProducts() {
+      const products = getStoreProducts().sort((a, b) => (b.sales || 0) - (a.sales || 0)).slice(0, 5);
+      const tbody = document.getElementById('top-products');
+      
+      if (products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Nenhum produto</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = products.map(p => {
+        const stock = p.stock || 0;
+        const status = stock === 0 ? 'Esgotado' : stock < 10 ? 'Baixo' : 'Em estoque';
+        const badgeClass = stock === 0 ? 'bg-danger' : stock < 10 ? 'bg-warning' : 'bg-success';
+        
+        return `
+          <tr>
+            <td>${p.name}</td>
+            <td>${p.sales || 0}</td>
+            <td>${stock}</td>
+            <td><span class="badge ${badgeClass}">${status}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ============================================
+    // SEÇÕES SECUNDÁRIAS
+    // ============================================
+    function loadProductsSection() {
+      const products = getStoreProducts();
+      const tbody = document.getElementById('products-table');
+      
+      tbody.innerHTML = products.map(p => `
+        <tr>
+          <td><strong>${p.name}</strong></td>
+          <td>R$ ${(p.price || 0).toFixed(2)}</td>
+          <td>${p.stock || 0}</td>
+          <td><span class="badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'}">
+            ${p.stock > 0 ? 'Ativo' : 'Inativo'}
+          </span></td>
+        </tr>
+      `).join('');
+    }
+
+    function loadOrdersSection() {
+      const orders = getStoreOrders();
+      const tbody = document.getElementById('orders-table');
+      
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td><strong>#${o.id}</strong></td>
+          <td>${o.customer || 'Cliente'}</td>
+          <td>${o.date || 'N/A'}</td>
+          <td>R$ ${(o.total || 0).toFixed(2)}</td>
+          <td><span class="badge bg-info">${o.status || 'Pendente'}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function loadCustomersSection() {
+      const customers = getStoreCustomers();
+      const tbody = document.getElementById('customers-table');
+      
+      tbody.innerHTML = customers.slice(0, 10).map(c => `
+        <tr>
+          <td><strong>${c.firstName || 'Cliente'} ${c.lastName || ''}</strong></td>
+          <td>${c.email}</td>
+          <td>${c.orders ? c.orders.length : 0}</td>
+          <td>R$ ${c.orders ? c.orders.reduce((s, o) => s + (o.total || 0), 0).toFixed(2) : '0.00'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ============================================
+    // GRÁFICOS
+    // ============================================
+    let salesChart = null;
+    let categoryChart = null;
+
+    function initCharts() {
+      createSalesChart();
+      createCategoryChart();
+    }
+
+    function createSalesChart() {
+      const ctx = document.getElementById('salesChart');
+      if (!ctx) return;
+
+      if (salesChart) salesChart.destroy();
+
+      salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['1', '5', '10', '15', '20', '25', '30'],
+          datasets: [{
+            label: 'Vendas (R$)',
+            data: [1200, 1900, 1500, 2800, 2200, 3000, 2500],
+            borderColor: '#4361ee',
+            backgroundColor: 'rgba(67,97,238,0.1)',
+            fill: true,
+            tension: 0.4,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.08)' } },
+            x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.08)' } }
+          }
+        }
+      });
+    }
+
+    function createCategoryChart() {
+      const ctx = document.getElementById('categoryChart');
+      if (!ctx) return;
+
+      if (categoryChart) categoryChart.destroy();
+
+      categoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Eletrônicos', 'Informática', 'Games', 'Escritório', 'Outros'],
+          datasets: [{
+            data: [35, 25, 20, 15, 5],
+            backgroundColor: ['#4361ee', '#7209b7', '#4cc9f0', '#f72585', '#4895ef'],
+            borderWidth: 1,
+            borderColor: '#1e293b'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
+        }
+      });
+    }
+
+    function updateChart(days) {
+      initCharts();
+    }
+
+    function refreshDashboard() {
+      loadDashboardData();
+      showNotification('Dashboard atualizado!', 'success');
+    }
+
+    // ============================================
+    // UTILITÁRIOS
+    // ============================================
+    function showNotification(message, type) {
+      const div = document.createElement('div');
+      div.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+      div.style.zIndex = 9999;
+      div.innerHTML = `<i class="bi bi-check-circle"></i> ${message}`;
+      document.body.appendChild(div);
+      
+      setTimeout(() => div.remove(), 3000);
+    }
+
+    function logout() {
+      if (confirm('Tem certeza que deseja sair?')) {
+        localStorage.removeItem('adminToken');
+        window.location.href = 'login.html';
+      }
+    }
+
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      navigateTo('dashboard');
+    });
+  </script>
+</body>
+</html>
