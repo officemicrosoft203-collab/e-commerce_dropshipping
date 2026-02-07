@@ -1,4 +1,15 @@
 const db = require('../models/db'); // assume que db.js exporta um objeto db com .all
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+app.use('/api/orders', require('./routes/orderRoutes'));
+
+module.exports = app;
+
+app.use('/api/orders', orderRoutes);
+
 
 function queryAll(sql, params = []) {
   return new Promise((resolve, reject) => {
