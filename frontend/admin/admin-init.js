@@ -10,6 +10,25 @@
     }
 })();
 
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('adminToken');
+    const adminMenu = document.getElementById('adminMenu');
+
+    if (token && adminMenu) {
+        adminMenu.style.display = 'block';
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'adminLogout') {
+        e.preventDefault();
+
+        localStorage.removeItem('adminToken');
+
+        window.location.href = 'login.html';
+    }
+});
+
 // ===================================
 // SISTEMA COMPLETO DE NAVEGAÇÃO ADMIN
 // ===================================
