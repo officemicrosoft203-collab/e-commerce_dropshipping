@@ -1,4 +1,16 @@
 // ===================================
+// 🔒 PROTEÇÃO DE ACESSO ADMIN
+// ===================================
+(function protectAdminPage() {
+    const token = localStorage.getItem('adminToken');
+
+    if (!token) {
+        console.warn('⛔ Acesso negado: admin não autenticado');
+        window.location.href = 'login.html';
+    }
+})();
+
+// ===================================
 // SISTEMA COMPLETO DE NAVEGAÇÃO ADMIN
 // ===================================
 
